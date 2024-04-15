@@ -1,5 +1,5 @@
 {
-  "name": "starter-mru",
+  "name": "bridge-mru",
   "module": "index.ts",
   "type": "module",
   "scripts": {
