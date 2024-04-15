@@ -14,6 +14,7 @@ type BaseActionInput = {
   from: string;
   to: string;
   amount: number;
+  nonce: number;
 };
 
 // --------- State Transition Handlers ---------
@@ -35,9 +36,15 @@ const create: STF<ERC20, CreateInput> = {
 
 const mint: STF<ERC20, BaseActionInput> = {
   handler: ({ inputs, state }) => {
-    const { to, amount } = inputs;
+    const { to, amount, nonce } = inputs;
 
     const index = findIndexOfAccount(state, to);
+
+    if (nonce - state.leaves[index].nonce !== 1) {
+      throw new Error("Invalid nonce");
+    }
+
+    state.leaves[index].nonce += 1;
     state.leaves[index].balance += amount;
     return state;
   },
@@ -45,13 +52,19 @@ const mint: STF<ERC20, BaseActionInput> = {
 
 const burn: STF<ERC20, BaseActionInput> = {
   handler: ({ inputs, state, msgSender }) => {
-    const { from, amount } = inputs;
+    const { from, amount, nonce } = inputs;
 
     const index = findIndexOfAccount(state, from);
 
     if (state.leaves[index].address !== msgSender) {
       throw new Error("Unauthorized");
     }
+
+    if (nonce - state.leaves[index].nonce !== 1) {
+      throw new Error("Invalid nonce");
+    }
+
+    state.leaves[index].nonce += 1;
     state.leaves[index].balance -= amount;
     return state;
   },
@@ -59,7 +72,7 @@ const burn: STF<ERC20, BaseActionInput> = {
 
 const transfer: STF<ERC20, BaseActionInput> = {
   handler: ({ inputs, state, msgSender }) => {
-    const { to, from, amount } = inputs;
+    const { to, from, amount, nonce } = inputs;
 
     const fromIndex = findIndexOfAccount(state, from);
     const toIndex = findIndexOfAccount(state, to);
@@ -67,6 +80,11 @@ const transfer: STF<ERC20, BaseActionInput> = {
     // check if the sender is the owner of the account
     if (state.leaves[fromIndex]?.address !== msgSender) {
       throw new Error("Unauthorized");
+    }
+
+    // check if the nonce is valid
+    if (nonce - state.leaves[fromIndex].nonce !== 1) {
+      throw new Error("Invalid nonce");
     }
 
     // check if the sender has enough balance
@@ -79,6 +97,7 @@ const transfer: STF<ERC20, BaseActionInput> = {
       throw new Error("Account does not exist");
     }
 
+    state.leaves[fromIndex].nonce += 1;
     state.leaves[fromIndex].balance -= amount;
     state.leaves[toIndex].balance += amount;
     return state;
@@ -87,13 +106,17 @@ const transfer: STF<ERC20, BaseActionInput> = {
 
 const approve: STF<ERC20, BaseActionInput> = {
   handler: ({ inputs, state, msgSender }) => {
-    const { from, to, amount } = inputs;
+    const { from, to, amount, nonce } = inputs;
 
     const index = findIndexOfAccount(state, from);
     if (state.leaves[index].address !== msgSender) {
       throw new Error("Unauthorized");
     }
+    if (nonce - state.leaves[index].nonce !== 1) {
+      throw new Error("Invalid nonce");
+    }
 
+    state.leaves[index].nonce += 1;
     state.leaves[index].allowances.push({ address: to, amount });
     return state;
   },
@@ -101,11 +124,15 @@ const approve: STF<ERC20, BaseActionInput> = {
 
 const transferFrom: STF<ERC20, BaseActionInput> = {
   handler: ({ inputs, state, msgSender }) => {
-    const { to, from, amount } = inputs;
+    const { to, from, amount, nonce } = inputs;
 
     // check if the msgSender has enough allowance from the owner
     const toIndex = findIndexOfAccount(state, to);
     const fromIndex = findIndexOfAccount(state, from);
+
+    if (nonce - state.leaves[fromIndex].nonce !== 1) {
+      throw new Error("Invalid nonce");
+    }
 
     const allowance = state.leaves[fromIndex].allowances.find(
       (allowance) => allowance.address === msgSender
@@ -119,6 +146,7 @@ const transferFrom: STF<ERC20, BaseActionInput> = {
       throw new Error("Insufficient funds");
     }
 
+    state.leaves[fromIndex].nonce += 1;
     state.leaves[fromIndex].balance -= amount;
     state.leaves[toIndex].balance += amount;
     state.leaves[fromIndex].allowances = state.leaves[fromIndex].allowances.map(

@@ -1,5 +1,5 @@
 import { State } from "@stackr/sdk/machine";
-import { BytesLike, ZeroHash, solidityPackedKeccak256 } from "ethers";
+import { ZeroHash, solidityPackedKeccak256 } from "ethers";
 import { MerkleTree } from "merkletreejs";
 
 export type Leaves = {
@@ -48,10 +48,10 @@ export class ERC20 extends State<Leaves, BetterMerkleTree> {
     };
   }
 
-  getRootHash(): BytesLike {
+  getRootHash(): string {
     if (this.state.length === 0) {
       return ZeroHash;
     }
-    return this.transformer().wrap().merkleTree.getRoot();
+    return this.transformer().wrap().merkleTree.getHexRoot();
   }
 }

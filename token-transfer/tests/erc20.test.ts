@@ -3,7 +3,7 @@ import { StateMachine } from "@stackr/sdk/machine";
 import { expect } from "chai";
 import { Wallet } from "ethers";
 import genesisState from "../genesis-state.json";
-import { createAccountSchema, schemas } from "../src/actions.ts";
+import { schemas } from "../src/actions.ts";
 import { ERC20Machine } from "../src/erc20.ts";
 import { ERC20 } from "../src/state.ts";
 import { transitions } from "../src/transitions.ts";
@@ -49,10 +49,9 @@ describe("ERC20 MRU", async () => {
         },
         logLevel: "error",
       },
-      actions: [createAccountSchema, ...Object.values(schemas)],
+      actionSchemas: [...Object.values(schemas)],
+      stateMachines: [machine],
     });
-
-    mru.stateMachines.add(machine);
     await mru.init();
   });
 
@@ -99,6 +98,7 @@ describe("ERC20 MRU", async () => {
         to: msgSender,
         from: msgSender,
         amount: MINT_AMOUNT,
+        nonce: 1,
       };
 
       const signature = await bobWallet.signTypedData(

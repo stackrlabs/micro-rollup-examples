@@ -34,6 +34,12 @@ describe("Token Machine Behaviours", () => {
     "0x0123456789012345678901234567890123456789012345678901234567890123";
   const CHARLIE_ADDRESS =
     "0x0123456789012345678901234567890123456789012345678901234567890125";
+  const block = {
+    height: 1,
+    timestamp: 121312312,
+    parentHash:
+      "0x0123456789012345678901234567890123456789012345678901234567890126",
+  };
 
   const aliceWallet = new Wallet(ALICE_ADDRESS);
   const bobWallet = new Wallet(BOB_ADDRESS);
@@ -64,6 +70,7 @@ describe("Token Machine Behaviours", () => {
       payload,
       msgSender,
       signature,
+      block,
     });
 
     const leaves = machine.state;
@@ -84,6 +91,7 @@ describe("Token Machine Behaviours", () => {
       to: msgSender,
       from: msgSender,
       amount: AMOUNT_TO_MINT,
+      nonce: 1,
     };
 
     const signature = await bobWallet.signTypedData(
@@ -97,6 +105,7 @@ describe("Token Machine Behaviours", () => {
       payload,
       msgSender,
       signature,
+      block,
     });
 
     const accounts = machine.state;
@@ -125,6 +134,7 @@ describe("Token Machine Behaviours", () => {
       to: msgSender,
       from: msgSender,
       amount: AMOUNT_TO_BURN,
+      nonce: 2,
     };
 
     const signature = await bobWallet.signTypedData(
@@ -145,6 +155,7 @@ describe("Token Machine Behaviours", () => {
       payload,
       msgSender: signer,
       signature,
+      block,
     });
 
     const accounts = machine.state;
@@ -167,6 +178,7 @@ describe("Token Machine Behaviours", () => {
       to: targetAccount,
       from: targetAccount,
       amount: AMOUNT_TO_BURN,
+      nonce: 3,
     };
 
     const signature = await bobWallet.signTypedData(
@@ -181,6 +193,7 @@ describe("Token Machine Behaviours", () => {
         payload,
         msgSender,
         signature,
+        block,
       });
     }).to.throw("Unauthorized");
 
@@ -205,6 +218,7 @@ describe("Token Machine Behaviours", () => {
       payload,
       msgSender,
       signature,
+      block,
     });
 
     const leaves = machine.state;
@@ -234,6 +248,7 @@ describe("Token Machine Behaviours", () => {
       to: aliceWallet.address,
       from: msgSender,
       amount: AMOUNT_TO_TRANSFER,
+      nonce: 3,
     };
 
     const signature = await bobWallet.signTypedData(
@@ -247,6 +262,7 @@ describe("Token Machine Behaviours", () => {
       payload,
       msgSender,
       signature,
+      block,
     });
 
     const accounts = machine.state;
@@ -289,6 +305,7 @@ describe("Token Machine Behaviours", () => {
       to: charlieWallet.address,
       from: msgSender,
       amount: AMOUNT_TO_TRANSFER,
+      nonce: 4,
     };
 
     const signature = await bobWallet.signTypedData(
@@ -303,6 +320,7 @@ describe("Token Machine Behaviours", () => {
         payload,
         msgSender,
         signature,
+        block,
       });
     }).to.throw("Account does not exist");
 
@@ -322,6 +340,7 @@ describe("Token Machine Behaviours", () => {
       to: aliceWallet.address,
       from: msgSender,
       amount: AMOUNT_TO_TRANSFER,
+      nonce: 4,
     };
 
     const signature = await bobWallet.signTypedData(
@@ -336,6 +355,7 @@ describe("Token Machine Behaviours", () => {
         payload,
         msgSender,
         signature,
+        block,
       });
     }).to.throw("Insufficient funds");
 

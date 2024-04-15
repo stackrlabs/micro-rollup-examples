@@ -51,7 +51,7 @@ app.get("/blocks/:hash", async (req: Request, res: Response) => {
   if (!block) {
     return res.status(404).send({ message: "Block not found" });
   }
-  return res.send(block.data);
+  return res.send(block);
 });
 
 app.post("/:reducerName", async (req: Request, res: Response) => {
@@ -77,7 +77,6 @@ app.post("/:reducerName", async (req: Request, res: Response) => {
   }
   return;
 });
-
 
 app.get("/", (_req: Request, res: Response) => {
   return res.send({ state: erc20Machine?.state });
