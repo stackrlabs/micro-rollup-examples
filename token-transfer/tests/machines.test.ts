@@ -362,4 +362,36 @@ describe("Token Machine Behaviours", () => {
     const finalStateRoot = machine.stateRootHash;
     expect(initialStateRoot).to.equal(finalStateRoot);
   });
+
+  it("should not allow action with invalid nonce", async () => {
+    const AMOUNT_TO_MINT = 42;
+    const msgSender = bobWallet.address;
+    const initialStateRoot = machine.stateRootHash;
+
+    const payload = {
+      to: msgSender,
+      from: msgSender,
+      amount: AMOUNT_TO_MINT,
+      nonce: 0,
+    };
+
+    const signature = await bobWallet.signTypedData(
+      domain,
+      schemas.mint.EIP712TypedData.types,
+      payload
+    );
+
+    expect(() => {
+      machine.reduce({
+        name: "mint",
+        payload,
+        msgSender,
+        signature,
+        block,
+      });
+    }).to.throw("Invalid nonce");
+
+    const finalStateRoot = machine.stateRootHash;
+    expect(initialStateRoot).to.equal(finalStateRoot);
+  });
 });
