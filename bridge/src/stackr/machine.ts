@@ -1,5 +1,6 @@
 import { State, StateMachine } from "@stackr/sdk/machine";
-import { solidityPackedKeccak256 } from "ethers";
+import { solidityPackedKeccak256, ZeroHash } from "ethers";
+import MerkleTree from "merkletreejs";
 
 import * as genesisState from "../../genesis-state.json";
 import { transitions } from "./transitions";
@@ -14,8 +15,15 @@ export class BridgeState extends State<Balances> {
     super(state);
   }
 
-  getRootHash() {
-    return solidityPackedKeccak256(["string"], [JSON.stringify(this.state)]);
+  getRootHash(): string {
+    if (this.state.length === 0) {
+      return ZeroHash;
+    }
+    const hashes = this.state.map(({ address, balance }) =>
+      solidityPackedKeccak256(["address", "uint"], [address, balance])
+    );
+    const tree = new MerkleTree(hashes);
+    return tree.getHexRoot();
   }
 }
 

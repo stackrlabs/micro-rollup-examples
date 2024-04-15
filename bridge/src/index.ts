@@ -30,6 +30,9 @@ async function main() {
     config: stackrConfig,
     actionSchemas: [MintTokenSchema],
     stateMachines: [machine],
+    stfSchemaMap: {
+      mintToken: MintTokenSchema.identifier,
+    },
   });
   await rollup.init();
 
