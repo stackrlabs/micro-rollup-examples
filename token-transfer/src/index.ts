@@ -21,7 +21,9 @@ if (process.env.NODE_ENV === "development") {
   playground.addGetMethod(
     "/custom/hello",
     async (_req: Request, res: Response) => {
-      res.send("Hello World");
+      res.json({
+        message: "Hello from the custom route",
+      });
     }
   );
 }
