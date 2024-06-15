@@ -16,7 +16,6 @@ const stackrConfig: StackrConfig = {
     blockTime: 10,
   },
   syncer: {
-    slotTime: 1000,
     vulcanRPC: process.env.VULCAN_RPC as string,
     L1RPC: process.env.L1_RPC as string,
   },
