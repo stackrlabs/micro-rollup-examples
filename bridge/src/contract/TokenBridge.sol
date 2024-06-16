@@ -10,10 +10,10 @@ interface ITicketFactory {
 }
 
 contract TokenBridge {
-    address ticketFactory;
+    address appInbox;
 
-    constructor(address _ticketFactory) {
-        ticketFactory = _ticketFactory;
+    constructor(address _appInbox) {
+        appInbox = _appInbox;
     }
 
     function bridgeETH(address _to) external payable {
@@ -23,10 +23,6 @@ contract TokenBridge {
         bytes memory message = abi.encode(_to, msg.value);
         bytes32 identifier = keccak256("BRIDGE_ETH");
 
-        ITicketFactory(ticketFactory).createTicket(
-            identifier,
-            msg.sender,
-            message
-        );
+        ITicketFactory(appInbox).createTicket(identifier, msg.sender, message);
     }
 }
