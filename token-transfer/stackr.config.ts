@@ -12,11 +12,10 @@ const stackrConfig: StackrConfig = {
     appInbox: deployment.appInbox,
   },
   sequencer: {
-    batchSize: 16,
-    batchTime: 10,
+    blockSize: 16,
+    blockTime: 10,
   },
   syncer: {
-    slotTime: 1000,
     vulcanRPC: process.env.VULCAN_RPC as string,
     L1RPC: process.env.L1_RPC as string,
   },

@@ -1,6 +1,6 @@
 import { ActionSchema, AllowedInputTypes, MicroRollup } from "@stackr/sdk";
 import { Bridge } from "@stackr/sdk/plugins";
-import { Wallet, AbiCoder } from "ethers";
+import { Wallet, AbiCoder, formatEther } from "ethers";
 import dotenv from "dotenv";
 
 import { stackrConfig } from "../stackr.config.ts";
@@ -40,10 +40,10 @@ async function main() {
     handlers: {
       BRIDGE_ETH: async (args) => {
         const [_to, _amount] = abiCoder.decode(["address", "uint"], args.data);
-
+        console.log("Minting token to", _to, "with amount", _amount);
         const inputs = {
           address: _to,
-          amount: Number(_amount),
+          amount: Number(formatEther(_amount)),
         };
 
         const signature = await signMessage(operator, MintTokenSchema, inputs);
