@@ -40,12 +40,11 @@ describe("ERC20 MRU", async () => {
 
   beforeEach(async () => {
     mru = await MicroRollup({
-      isSandbox: true,
       config: {
         ...stackrConfig,
         sequencer: {
-          batchSize: 1,
-          batchTime: 1,
+          blockSize: 1,
+          blockTime: 1,
         },
         logLevel: "error",
       },
