@@ -3,9 +3,9 @@ import { StateMachine } from "@stackr/sdk/machine";
 import { expect } from "chai";
 import { Wallet } from "ethers";
 import genesisState from "../genesis-state.json";
-import { schemas } from "../src/actions.ts";
-import { ERC20Machine } from "../src/erc20.ts";
-import { ERC20 } from "../src/state.ts";
+import { schemas } from "../src/stackr/actions.ts";
+import { ERC20Machine } from "../src/stackr/erc20.ts";
+import { ERC20 } from "../src/stackr/state.ts";
 import { transitions } from "../src/transitions.ts";
 import { stackrConfig } from "../stackr.config.ts";
 
