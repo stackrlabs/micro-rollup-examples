@@ -1,4 +1,4 @@
-import { DA, KeyPurpose, SignatureScheme, StackrConfig } from "@stackr/sdk";
+import { KeyPurpose, SignatureScheme, StackrConfig } from "@stackr/sdk";
 import dotenv from "dotenv";
 
 dotenv.config();

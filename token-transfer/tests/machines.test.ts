@@ -4,7 +4,7 @@ import { Wallet, ZeroHash, verifyTypedData } from "ethers";
 import genesisState from "../genesis-state.json";
 import { schemas } from "../src/stackr/actions";
 import { ERC20, Leaves } from "../src/stackr/state";
-import { transitions } from "../src/transitions";
+import { transitions } from "../src/stackr/transitions";
 import { stackrConfig } from "../stackr.config";
 
 const getAccountWiseBalances = (accounts: Leaves) => {

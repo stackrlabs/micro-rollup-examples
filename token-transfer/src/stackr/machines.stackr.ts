@@ -1,5 +1,5 @@
 import { StateMachine } from "@stackr/sdk/machine";
-import genesisState from "../genesis-state.json";
+import genesisState from "../../genesis-state.json";
 import { transitions } from "./transitions";
 import { ERC20 } from "./state";
 

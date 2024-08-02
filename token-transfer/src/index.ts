@@ -5,7 +5,7 @@ import { Playground } from "@stackr/sdk/plugins";
 import dotenv from "dotenv";
 import { schemas } from "./stackr/actions.ts";
 import { ERC20Machine, mru } from "./stackr/erc20.ts";
-import { transitions } from "./transitions.ts";
+import { transitions } from "./stackr/transitions.ts";
 
 console.log("Starting server...");
 dotenv.config();

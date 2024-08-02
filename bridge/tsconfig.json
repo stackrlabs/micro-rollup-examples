@@ -25,7 +25,6 @@
   "include": [
     "src/**/*",
     "tests/**/*",
-    "executors/**/*",
     "deployment.json",
     "stackr.config.ts",
     "genesis-state.json"
