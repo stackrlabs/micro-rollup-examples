@@ -1,5 +1,5 @@
 import { MicroRollup } from "@stackr/sdk";
-import { stackrConfig } from "../stackr.config.ts";
+import { stackrConfig } from "../../stackr.config.ts";
 
 import { schemas } from "./actions.ts";
 import { erc20StateMachine } from "./machines.stackr.ts";

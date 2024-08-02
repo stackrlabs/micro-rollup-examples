@@ -9,8 +9,8 @@ import { Chess } from "chess.js";
 import genesisState from "../genesis-state.json";
 import { moveSchema } from "../src/stackr/actions.ts";
 import { chessStateMachine } from "../src/stackr/chess.machine.ts";
-import { transitions } from "../src/stackr/transitions.ts";
 import { ChessState } from "../src/stackr/state.ts";
+import { transitions } from "../src/stackr/transitions.ts";
 import { signByOperator, sleep } from "../src/utils.ts";
 import { stackrConfig } from "../stackr.config.ts";
 
@@ -26,12 +26,11 @@ describe("Chess MRU", async () => {
 
   beforeEach(async () => {
     mru = await MicroRollup({
-      isSandbox: true,
       config: {
         ...stackrConfig,
         sequencer: {
-          batchSize: 1,
-          batchTime: 1,
+          blockSize: 1,
+          blockTime: 1,
         },
         logLevel: "error",
       },

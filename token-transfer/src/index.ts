@@ -3,9 +3,9 @@ import express, { Request, Response } from "express";
 import { ActionEvents } from "@stackr/sdk";
 import { Playground } from "@stackr/sdk/plugins";
 import dotenv from "dotenv";
-import { schemas } from "./actions.ts";
-import { ERC20Machine, mru } from "./erc20.ts";
-import { transitions } from "./transitions.ts";
+import { schemas } from "./stackr/actions.ts";
+import { ERC20Machine, mru } from "./stackr/erc20.ts";
+import { transitions } from "./stackr/transitions.ts";
 
 console.log("Starting server...");
 dotenv.config();
