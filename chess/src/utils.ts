@@ -2,7 +2,7 @@ import { ActionSchema } from "@stackr/sdk";
 import { Wallet } from "ethers";
 import { stackrConfig } from "../stackr.config";
 
-const { domain, operator } = stackrConfig;
+const { operator } = stackrConfig;
 
 const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -11,7 +11,7 @@ const sleep = (ms: number) => {
 const signByOperator = async (schema: ActionSchema, payload: any) => {
   const wallet = new Wallet(operator.accounts[0].privateKey);
   const signature = await wallet.signTypedData(
-    domain,
+    schema.domain,
     schema.EIP712TypedData.types,
     payload
   );
