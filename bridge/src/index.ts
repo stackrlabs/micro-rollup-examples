@@ -1,49 +1,26 @@
-import { ActionSchema, AllowedInputTypes, MicroRollup } from "@stackr/sdk";
 import { Bridge } from "@stackr/sdk/plugins";
-import { Wallet, AbiCoder, formatEther } from "ethers";
 import dotenv from "dotenv";
+import { AbiCoder, formatEther, Wallet } from "ethers";
 
-import { stackrConfig } from "../stackr.config.ts";
-import { machine } from "./stackr/machine.ts";
-import { MintTokenSchema } from "./stackr/action.ts";
+import { mru } from "./stackr/mru.ts";
+import { MintTokenSchema } from "./stackr/schemas.ts";
+import { signMessage } from "./utils.ts";
 
 dotenv.config();
 
 const abiCoder = AbiCoder.defaultAbiCoder();
 const operator = new Wallet(process.env.PRIVATE_KEY as string);
 
-const signMessage = async (
-  wallet: Wallet,
-  schema: ActionSchema,
-  payload: AllowedInputTypes
-) => {
-  const signature = await wallet.signTypedData(
-    schema.domain,
-    schema.EIP712TypedData.types,
-    payload
-  );
-  return signature;
-};
-
 async function main() {
-  const rollup = await MicroRollup({
-    config: stackrConfig,
-    actionSchemas: [MintTokenSchema],
-    stateMachines: [machine],
-    stfSchemaMap: {
-      mintToken: MintTokenSchema.identifier,
-    },
-  });
-  await rollup.init();
-
-  Bridge.init(rollup, {
+  // Add Handlers on Bridge attached to Rollup
+  Bridge.init(mru, {
     handlers: {
       BRIDGE_ETH: async (args) => {
-        const [_to, _amount] = abiCoder.decode(["address", "uint"], args.data);
-        console.log("Minting token to", _to, "with amount", _amount);
+        const [to, amount] = abiCoder.decode(["address", "uint"], args.data);
+        console.log("Minting token to", to, "with amount", amount);
         const inputs = {
-          address: _to,
-          amount: Number(formatEther(_amount)),
+          address: to,
+          amount: Number(formatEther(amount)),
         };
 
         const signature = await signMessage(operator, MintTokenSchema, inputs);
@@ -55,11 +32,12 @@ async function main() {
 
         return {
           transitionName: "mintToken",
-          action: action,
+          action,
         };
       },
     },
   });
+  console.log("Waiting for BRIDGE_ETH event on the bridge contract...");
 }
 
 main();
