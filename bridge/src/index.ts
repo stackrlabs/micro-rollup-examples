@@ -1,10 +1,8 @@
-import { MicroRollup } from "@stackr/sdk";
 import { Bridge } from "@stackr/sdk/plugins";
 import dotenv from "dotenv";
 import { AbiCoder, formatEther, Wallet } from "ethers";
 
-import { stackrConfig } from "../stackr.config.ts";
-import { machine } from "./stackr/machine.ts";
+import { mru } from "./stackr/mru.ts";
 import { MintTokenSchema } from "./stackr/schemas.ts";
 import { signMessage } from "./utils.ts";
 
@@ -14,18 +12,8 @@ const abiCoder = AbiCoder.defaultAbiCoder();
 const operator = new Wallet(process.env.PRIVATE_KEY as string);
 
 async function main() {
-  const rollup = await MicroRollup({
-    config: stackrConfig,
-    actionSchemas: [MintTokenSchema],
-    stateMachines: [machine],
-    // NOTE: this is optional, but when defined it'll perform checks on schema configured to the STF
-    stfSchemaMap: {
-      mintToken: MintTokenSchema,
-    },
-  });
-  await rollup.init();
-
-  Bridge.init(rollup, {
+  // Add Handlers on Bridge attached to Rollup
+  Bridge.init(mru, {
     handlers: {
       BRIDGE_ETH: async (args) => {
         const [to, amount] = abiCoder.decode(["address", "uint"], args.data);
