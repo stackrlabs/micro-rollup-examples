@@ -1,5 +1,5 @@
-import { STF, Transitions, REQUIRE } from "@stackr/sdk/machine";
-import { BridgeState } from "./machine";
+import { STF, Transitions } from "@stackr/sdk/machine";
+import { BridgeState } from "./state";
 
 const mintToken: STF<BridgeState> = {
   handler: ({ state, inputs }) => {
