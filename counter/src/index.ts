@@ -1,23 +1,9 @@
-import { ActionSchema, AllowedInputTypes, MicroRollup } from "@stackr/sdk";
-import { HDNodeWallet, Wallet } from "ethers";
+import { ActionConfirmationStatus, MicroRollup } from "@stackr/sdk";
+import { Wallet } from "ethers";
 import { stackrConfig } from "../stackr.config.ts";
-import { UpdateCounterSchema } from "./stackr/action.ts";
 import { machine } from "./stackr/machine.ts";
-
-const wallet = Wallet.createRandom();
-
-const signMessage = async (
-  wallet: HDNodeWallet,
-  schema: ActionSchema,
-  payload: AllowedInputTypes
-) => {
-  const signature = await wallet.signTypedData(
-    schema.domain,
-    schema.EIP712TypedData.types,
-    payload
-  );
-  return signature;
-};
+import { UpdateCounterSchema } from "./stackr/schemas.ts";
+import { signMessage } from "./utils.ts";
 
 const main = async () => {
   const mru = await MicroRollup({
@@ -32,6 +18,9 @@ const main = async () => {
     timestamp: Date.now(),
   };
 
+  // Create a random wallet
+  const wallet = Wallet.createRandom();
+
   const signature = await signMessage(wallet, UpdateCounterSchema, inputs);
   const incrementAction = UpdateCounterSchema.actionFrom({
     inputs,
@@ -40,7 +29,11 @@ const main = async () => {
   });
 
   const ack = await mru.submitAction("increment", incrementAction);
-  console.log(ack);
+  console.log(ack.hash);
+
+  // leverage the ack to wait for C1 and access logs & error from STF execution
+  const { logs, errors } = await ack.waitFor(ActionConfirmationStatus.C1);
+  console.log({ logs, errors });
 };
 
 main();
