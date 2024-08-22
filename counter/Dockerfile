@@ -7,9 +7,6 @@ RUN npm install -g bun
 
 WORKDIR /app
 
-# Copy env files
-COPY .env .env
-
 # Copy package.json and tsconfig.json
 COPY package.json package.json
 COPY tsconfig.json tsconfig.json
