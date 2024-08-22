@@ -1,19 +1,10 @@
-import { ActionConfirmationStatus, MicroRollup } from "@stackr/sdk";
+import { ActionConfirmationStatus } from "@stackr/sdk";
 import { Wallet } from "ethers";
-import { stackrConfig } from "../stackr.config.ts";
-import { machine } from "./stackr/machine.ts";
+import { mru } from "./stackr/mru.ts";
 import { UpdateCounterSchema } from "./stackr/schemas.ts";
 import { signMessage } from "./utils.ts";
 
 const main = async () => {
-  const mru = await MicroRollup({
-    config: stackrConfig,
-    actionSchemas: [UpdateCounterSchema],
-    stateMachines: [machine],
-  });
-
-  await mru.init();
-
   const inputs = {
     timestamp: Date.now(),
   };
