@@ -4,8 +4,10 @@ import {
   MicroRollupResponse,
 } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
+import { afterEach, beforeEach, describe, it } from "bun:test";
 import { expect } from "chai";
 import { Chess } from "chess.js";
+
 import genesisState from "../genesis-state.json";
 import { chessStateMachine } from "../src/stackr/machine.ts";
 import { moveSchema } from "../src/stackr/schemas.ts";

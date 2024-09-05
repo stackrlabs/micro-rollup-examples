@@ -1,6 +1,8 @@
 import { StateMachine } from "@stackr/sdk/machine";
+import { describe, it } from "bun:test";
 import { expect } from "chai";
 import { Wallet, ZeroHash, verifyTypedData } from "ethers";
+
 import genesisState from "../genesis-state.json";
 import { schemas } from "../src/stackr/schemas";
 import { ERC20, Leaves } from "../src/stackr/state";

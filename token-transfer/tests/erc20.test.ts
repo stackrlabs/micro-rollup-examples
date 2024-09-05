@@ -1,7 +1,9 @@
 import { MicroRollup, MicroRollupResponse } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
+import { afterEach, beforeEach, describe, it } from "bun:test";
 import { expect } from "chai";
 import { Wallet } from "ethers";
+
 import genesisState from "../genesis-state.json";
 import { ERC20Machine } from "../src/stackr/mru.ts";
 import { schemas } from "../src/stackr/schemas.ts";
