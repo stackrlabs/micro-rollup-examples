@@ -1,7 +1,6 @@
 import { MicroRollup, MicroRollupResponse } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
-import { afterEach, beforeEach, describe, it } from "bun:test";
-import { expect } from "chai";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { Wallet } from "ethers";
 
 import genesisState from "../genesis-state.json";
@@ -73,7 +72,7 @@ describe("ERC20 MRU", async () => {
       const action = schema.actionFrom({ msgSender, signature, inputs });
       const ack = await mru.submitAction(actionName, action);
 
-      expect(action.hash).to.equal(ack.actionHash);
+      expect(action.hash).toStrictEqual(ack.actionHash);
 
       await sleep(100);
 
@@ -86,7 +85,7 @@ describe("ERC20 MRU", async () => {
       }
 
       const accounts = erc20Machine.state;
-      expect(accounts.length).to.equal(1);
+      expect(accounts.length).toStrictEqual(1);
     });
 
     it("should mint tokens", async () => {
@@ -110,7 +109,7 @@ describe("ERC20 MRU", async () => {
       const action = schema.actionFrom({ msgSender, signature, inputs });
       const ack = await mru.submitAction(actionName, action);
 
-      expect(action.hash).to.equal(ack.actionHash);
+      expect(action.hash).toStrictEqual(ack.actionHash);
 
       await sleep(100);
 
@@ -131,7 +130,7 @@ describe("ERC20 MRU", async () => {
         throw new Error("Bob's account not found");
       }
 
-      expect(bobsAccount.balance).to.equal(MINT_AMOUNT);
+      expect(bobsAccount.balance).toStrictEqual(MINT_AMOUNT);
     });
   });
 
