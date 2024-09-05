@@ -1,9 +1,4 @@
-import {
-  ConfirmationEvents,
-  Domain,
-  MicroRollup,
-  MicroRollupResponse,
-} from "@stackr/sdk";
+import { MicroRollup, MicroRollupResponse } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
 import { expect } from "chai";
 import { Chess } from "chess.js";
@@ -24,8 +19,6 @@ describe("Chess MRU", async () => {
     stateClass: ChessState,
     on: transitions,
   });
-  const domain = stackrConfig.domain as Domain;
-  machine.setDomain(domain);
 
   beforeEach(async () => {
     mru = await MicroRollup({
@@ -58,17 +51,8 @@ describe("Chess MRU", async () => {
         move,
       };
 
-      const waitForEvent = (eventName: any) => {
-        return new Promise((resolve) => {
-          mru.events.subscribe(eventName, (event) => {
-            console.log(event);
-            resolve(event);
-          });
-        });
-      };
-
       const { msgSender, signature } = await signByOperator(
-        domain,
+        mru.config.domain,
         mru.getStfSchemaMap()["move"],
         inputs
       );
@@ -79,8 +63,7 @@ describe("Chess MRU", async () => {
         msgSender,
       });
 
-      await waitForEvent(ConfirmationEvents.C1);
-      await sleep(1000);
+      await sleep(100);
 
       const replicaBoard = new Chess();
       replicaBoard.move(move);

@@ -1,4 +1,4 @@
-import { Action, Domain, MicroRollup, MicroRollupResponse } from "@stackr/sdk";
+import { Action, MicroRollup, MicroRollupResponse } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
 import { expect } from "chai";
 import { Wallet } from "ethers";
@@ -36,8 +36,6 @@ describe("ERC20 MRU", async () => {
     initialState: genesisState.state,
     on: transitions,
   });
-  const domain = stackrConfig.domain as Domain;
-  machine.setDomain(domain);
 
   beforeEach(async () => {
     mru = await MicroRollup({

@@ -179,7 +179,7 @@ describe("Token Machine Behaviours", () => {
       nonce: 3,
     };
 
-    const signature = await bobWallet.signTypedData(
+    const signature = await aliceWallet.signTypedData(
       domain,
       machine.stfToSchemaMap["burn"],
       payload
