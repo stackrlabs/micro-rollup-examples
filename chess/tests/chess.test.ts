@@ -1,14 +1,15 @@
 import {
   ConfirmationEvents,
+  Domain,
   MicroRollup,
   MicroRollupResponse,
 } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
 import { expect } from "chai";
 import { Chess } from "chess.js";
+
 import genesisState from "../genesis-state.json";
 import { chessStateMachine } from "../src/stackr/machine.ts";
-import { moveSchema } from "../src/stackr/schemas.ts";
 import { ChessState } from "../src/stackr/state.ts";
 import { transitions } from "../src/stackr/transitions.ts";
 import { signByOperator, sleep } from "../src/utils.ts";
@@ -23,6 +24,8 @@ describe("Chess MRU", async () => {
     stateClass: ChessState,
     on: transitions,
   });
+  const domain = stackrConfig.domain as Domain;
+  machine.setDomain(domain);
 
   beforeEach(async () => {
     mru = await MicroRollup({
@@ -34,7 +37,6 @@ describe("Chess MRU", async () => {
         },
         logLevel: "error",
       },
-      actionSchemas: [moveSchema],
       stateMachines: [machine],
     });
 
@@ -65,15 +67,17 @@ describe("Chess MRU", async () => {
         });
       };
 
-      const signInfo = await signByOperator(moveSchema, inputs);
-
-      const ack = await mru.submitAction(
-        "move",
-        moveSchema.actionFrom({
-          inputs,
-          ...signInfo,
-        })
+      const { msgSender, signature } = await signByOperator(
+        domain,
+        mru.getStfSchemaMap()["move"],
+        inputs
       );
+      await mru.submitAction({
+        name: "move",
+        signature,
+        inputs,
+        msgSender,
+      });
 
       await waitForEvent(ConfirmationEvents.C1);
       await sleep(1000);

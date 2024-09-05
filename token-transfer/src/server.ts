@@ -3,7 +3,6 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { STATE_MACHINES } from "./stackr/machine.ts";
 import { ERC20Machine, mru } from "./stackr/mru.ts";
-import { schemas } from "./stackr/schemas.ts";
 import { transitions } from "./stackr/transitions.ts";
 
 dotenv.config();
@@ -50,14 +49,14 @@ export const setupServer = () => {
 
     const { msgSender, signature, inputs } = req.body;
 
-    const stfSchemaMap = getStfSchemaMap();
-    const schemaName = stfSchemaMap[transitionName] as keyof typeof schemas;
-
-    const schema = schemas[schemaName];
-
     try {
-      const action = schema.actionFrom({ msgSender, signature, inputs });
-      const ack = await mru.submitAction(transitionName, action);
+      const actionParams = {
+        name: transitionName,
+        signature,
+        inputs,
+        msgSender,
+      };
+      const ack = await mru.submitAction(actionParams);
       res.status(201).send({ ack });
     } catch (e: any) {
       res.status(400).send({ error: e.message });

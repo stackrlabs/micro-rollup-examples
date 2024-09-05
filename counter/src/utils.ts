@@ -1,15 +1,13 @@
-import { ActionSchema, AllowedInputTypes } from "@stackr/sdk";
+import { Domain } from "@stackr/sdk";
+import { AllowedInputTypes, EIP712Types } from "@stackr/sdk/machine";
 import { HDNodeWallet } from "ethers";
 
 export const signMessage = async (
   wallet: HDNodeWallet,
-  schema: ActionSchema,
+  domain: Domain,
+  types: EIP712Types,
   payload: AllowedInputTypes
 ) => {
-  const signature = await wallet.signTypedData(
-    schema.domain,
-    schema.EIP712TypedData.types,
-    payload
-  );
+  const signature = await wallet.signTypedData(domain, types, payload);
   return signature;
 };

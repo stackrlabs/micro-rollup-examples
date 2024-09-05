@@ -1,9 +1,13 @@
-import { STF, Transitions } from "@stackr/sdk/machine";
+import { STF, Transitions, SolidityType } from "@stackr/sdk/machine";
+
 import { ChessState } from "./state";
 
-type ActionInput = { move: string };
+const moveSchema = {
+  move: SolidityType.STRING,
+} as const;
 
-const move: STF<ChessState, ActionInput> = {
+const move: STF<ChessState, typeof moveSchema> = {
+  schema: moveSchema,
   handler: ({ state, inputs }) => {
     state.move(inputs.move);
     return state;

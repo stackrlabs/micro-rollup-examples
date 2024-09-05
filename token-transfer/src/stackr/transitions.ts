@@ -1,4 +1,5 @@
-import { Transitions, STF } from "@stackr/sdk/machine";
+import { STF, SolidityType, Transitions } from "@stackr/sdk/machine";
+
 import { ERC20, BetterMerkleTree as StateWrapper } from "./state";
 
 // --------- Utilities ---------
@@ -6,19 +7,22 @@ const findIndexOfAccount = (state: StateWrapper, address: string) => {
   return state.leaves.findIndex((leaf) => leaf.address === address);
 };
 
-type CreateInput = {
-  address: string;
-};
+// --------- Input Schemas ---------
 
-type BaseActionInput = {
-  from: string;
-  to: string;
-  amount: number;
-  nonce: number;
-};
+const baseSchema = {
+  to: SolidityType.ADDRESS,
+  from: SolidityType.ADDRESS,
+  amount: SolidityType.UINT,
+  nonce: SolidityType.UINT,
+} as const;
+
+const createAccountSchema = {
+  address: SolidityType.ADDRESS,
+} as const;
 
 // --------- State Transition Handlers ---------
-const create: STF<ERC20, CreateInput> = {
+const create: STF<ERC20, typeof createAccountSchema> = {
+  schema: createAccountSchema,
   handler: ({ inputs, state }) => {
     const { address } = inputs;
     if (state.leaves.find((leaf) => leaf.address === address)) {
@@ -34,7 +38,8 @@ const create: STF<ERC20, CreateInput> = {
   },
 };
 
-const mint: STF<ERC20, BaseActionInput> = {
+const mint: STF<ERC20, typeof baseSchema> = {
+  schema: baseSchema,
   handler: ({ inputs, state }) => {
     const { to, amount, nonce } = inputs;
 
@@ -50,7 +55,8 @@ const mint: STF<ERC20, BaseActionInput> = {
   },
 };
 
-const burn: STF<ERC20, BaseActionInput> = {
+const burn: STF<ERC20, typeof baseSchema> = {
+  schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { from, amount, nonce } = inputs;
 
@@ -70,7 +76,8 @@ const burn: STF<ERC20, BaseActionInput> = {
   },
 };
 
-const transfer: STF<ERC20, BaseActionInput> = {
+const transfer: STF<ERC20, typeof baseSchema> = {
+  schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { to, from, amount, nonce } = inputs;
 
@@ -104,7 +111,8 @@ const transfer: STF<ERC20, BaseActionInput> = {
   },
 };
 
-const approve: STF<ERC20, BaseActionInput> = {
+const approve: STF<ERC20, typeof baseSchema> = {
+  schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { from, to, amount, nonce } = inputs;
 
@@ -122,7 +130,8 @@ const approve: STF<ERC20, BaseActionInput> = {
   },
 };
 
-const transferFrom: STF<ERC20, BaseActionInput> = {
+const transferFrom: STF<ERC20, typeof baseSchema> = {
+  schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { to, from, amount, nonce } = inputs;
 

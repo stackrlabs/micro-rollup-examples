@@ -1,8 +1,9 @@
+import { Domain } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
 import { expect } from "chai";
 import { Wallet, ZeroHash, verifyTypedData } from "ethers";
+
 import genesisState from "../genesis-state.json";
-import { schemas } from "../src/stackr/schemas";
 import { ERC20, Leaves } from "../src/stackr/state";
 import { transitions } from "../src/stackr/transitions";
 import { stackrConfig } from "../stackr.config";
@@ -25,8 +26,8 @@ describe("Token Machine Behaviours", () => {
     initialState: genesisState.state,
     on: transitions,
   });
-
-  const { domain } = stackrConfig;
+  const domain = stackrConfig.domain as Domain;
+  machine.setDomain(domain);
 
   const ALICE_ADDRESS =
     "0x0123456789012345678901234567890123456789012345678901234567890124";
@@ -58,10 +59,9 @@ describe("Token Machine Behaviours", () => {
     const payload = {
       address: msgSender,
     };
-
     const signature = await bobWallet.signTypedData(
       domain,
-      schemas.create.EIP712TypedData.types,
+      machine.stfToSchemaMap["create"],
       payload
     );
 
@@ -86,17 +86,15 @@ describe("Token Machine Behaviours", () => {
   it("should be able to mint tokens", async () => {
     const AMOUNT_TO_MINT = 42;
     const msgSender = bobWallet.address;
-
     const payload = {
       to: msgSender,
       from: msgSender,
       amount: AMOUNT_TO_MINT,
       nonce: 1,
     };
-
     const signature = await bobWallet.signTypedData(
       domain,
-      schemas.mint.EIP712TypedData.types,
+      machine.stfToSchemaMap["mint"],
       payload
     );
 
@@ -139,13 +137,13 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      schemas.burn.EIP712TypedData.types,
+      machine.stfToSchemaMap["burn"],
       payload
     );
 
     const signer = verifyTypedData(
       domain,
-      schemas.burn.EIP712TypedData.types,
+      machine.stfToSchemaMap["burn"],
       payload,
       signature
     );
@@ -183,7 +181,7 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      schemas.burn.EIP712TypedData.types,
+      machine.stfToSchemaMap["burn"],
       payload
     );
 
@@ -209,7 +207,7 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await aliceWallet.signTypedData(
       domain,
-      schemas.create.EIP712TypedData.types,
+      machine.stfToSchemaMap["create"],
       payload
     );
 
@@ -253,7 +251,7 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      schemas.transfer.EIP712TypedData.types,
+      machine.stfToSchemaMap["transfer"],
       payload
     );
 
@@ -310,7 +308,7 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      schemas.transfer.EIP712TypedData.types,
+      machine.stfToSchemaMap["transfer"],
       payload
     );
 
@@ -345,7 +343,7 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      schemas.transfer.EIP712TypedData.types,
+      machine.stfToSchemaMap["transfer"],
       payload
     );
 
@@ -377,7 +375,7 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      schemas.mint.EIP712TypedData.types,
+      machine.stfToSchemaMap["mint"],
       payload
     );
 

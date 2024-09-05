@@ -1,9 +1,9 @@
+import { ActionParams } from "@stackr/sdk";
 import { Bridge } from "@stackr/sdk/plugins";
 import dotenv from "dotenv";
 import { AbiCoder, formatEther, Wallet } from "ethers";
 
 import { mru } from "./stackr/mru.ts";
-import { MintTokenSchema } from "./stackr/schemas.ts";
 import { signMessage } from "./utils.ts";
 
 dotenv.config();
@@ -23,16 +23,18 @@ async function main() {
           amount: Number(formatEther(amount)),
         };
 
-        const signature = await signMessage(operator, MintTokenSchema, inputs);
-        const action = MintTokenSchema.actionFrom({
+        const domain = mru.config.domain;
+        const types = mru.getStfSchemaMap()["mintToken"];
+        const signature = await signMessage(operator, domain, types, inputs);
+        const actionParams: ActionParams = {
+          name: "mintToken",
           inputs,
           signature,
           msgSender: operator.address,
-        });
+        };
 
         return {
-          transitionName: "mintToken",
-          action,
+          actionParams,
         };
       },
     },

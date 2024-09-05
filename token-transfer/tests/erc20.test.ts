@@ -1,10 +1,10 @@
-import { MicroRollup, MicroRollupResponse } from "@stackr/sdk";
+import { Action, Domain, MicroRollup, MicroRollupResponse } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
 import { expect } from "chai";
 import { Wallet } from "ethers";
+
 import genesisState from "../genesis-state.json";
 import { ERC20Machine } from "../src/stackr/mru.ts";
-import { schemas } from "../src/stackr/schemas.ts";
 import { ERC20 } from "../src/stackr/state.ts";
 import { transitions } from "../src/stackr/transitions.ts";
 import { stackrConfig } from "../stackr.config.ts";
@@ -36,6 +36,8 @@ describe("ERC20 MRU", async () => {
     initialState: genesisState.state,
     on: transitions,
   });
+  const domain = stackrConfig.domain as Domain;
+  machine.setDomain(domain);
 
   beforeEach(async () => {
     mru = await MicroRollup({
@@ -47,7 +49,6 @@ describe("ERC20 MRU", async () => {
         },
         logLevel: "error",
       },
-      actionSchemas: [...Object.values(schemas)],
       stateMachines: [machine],
     });
     await mru.init();
@@ -55,23 +56,23 @@ describe("ERC20 MRU", async () => {
 
   describe("Create and Mint", async () => {
     it("should create an account", async () => {
-      const actionName = "create";
-      const schema = schemas[actionName];
       const msgSender = bobWallet.address;
       const inputs = {
         address: msgSender,
       };
 
-      const signature = await bobWallet.signTypedData(
-        schema.domain,
-        schema.EIP712TypedData.types,
-        inputs
-      );
+      const domain = mru.config.domain;
+      const types = mru.getStfSchemaMap()["create"];
+      const signature = await bobWallet.signTypedData(domain, types, inputs);
+      const actionParams = {
+        name: "create",
+        signature,
+        inputs,
+        msgSender,
+      };
+      const ack = await mru.submitAction(actionParams);
 
-      const action = schema.actionFrom({ msgSender, signature, inputs });
-      const ack = await mru.submitAction(actionName, action);
-
-      expect(action.hash).to.equal(ack.actionHash);
+      expect(ack.actionHash).to.equal(new Action(actionParams).hash);
 
       await sleep(100);
 
@@ -88,8 +89,6 @@ describe("ERC20 MRU", async () => {
     });
 
     it("should mint tokens", async () => {
-      const actionName = "mint";
-      const schema = schemas[actionName];
       const msgSender = bobWallet.address;
       const MINT_AMOUNT = 1000;
       const inputs = {
@@ -99,16 +98,18 @@ describe("ERC20 MRU", async () => {
         nonce: 1,
       };
 
-      const signature = await bobWallet.signTypedData(
-        schema.domain,
-        schema.EIP712TypedData.types,
-        inputs
-      );
+      const domain = mru.config.domain;
+      const types = mru.getStfSchemaMap()["mint"];
+      const signature = await bobWallet.signTypedData(domain, types, inputs);
+      const actionParams = {
+        name: "mint",
+        signature,
+        inputs,
+        msgSender,
+      };
+      const ack = await mru.submitAction(actionParams);
 
-      const action = schema.actionFrom({ msgSender, signature, inputs });
-      const ack = await mru.submitAction(actionName, action);
-
-      expect(action.hash).to.equal(ack.actionHash);
+      expect(ack.actionHash).to.equal(new Action(actionParams).hash);
 
       await sleep(100);
 

@@ -1,7 +1,13 @@
-import { STF, Transitions } from "@stackr/sdk/machine";
+import { STF, Transitions, SolidityType } from "@stackr/sdk/machine";
+
 import { CounterState } from "./state";
 
-const increment: STF<CounterState> = {
+const schema = {
+  timestamp: SolidityType.UINT,
+} as const;
+
+const increment: STF<CounterState, typeof schema> = {
+  schema,
   handler: ({ state, emit }) => {
     state += 1;
     emit({ name: "ValueAfterIncrement", value: state });
@@ -9,7 +15,8 @@ const increment: STF<CounterState> = {
   },
 };
 
-const decrement: STF<CounterState> = {
+const decrement: STF<CounterState, typeof schema> = {
+  schema,
   handler: ({ state, emit }) => {
     state -= 1;
     emit({ name: "ValueAfterDecrement", value: state });

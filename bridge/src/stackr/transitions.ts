@@ -1,7 +1,14 @@
-import { STF, Transitions } from "@stackr/sdk/machine";
+import { STF, Transitions, SolidityType } from "@stackr/sdk/machine";
+
 import { BridgeState } from "./state";
 
-const mintToken: STF<BridgeState> = {
+const mintTokenSchema = {
+  address: SolidityType.ADDRESS,
+  amount: SolidityType.UINT,
+} as const;
+
+const mintToken: STF<BridgeState, typeof mintTokenSchema> = {
+  schema: mintTokenSchema,
   handler: ({ state, inputs }) => {
     const accountIdx = state.findIndex(
       (account) => account.address === inputs.address

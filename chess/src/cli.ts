@@ -1,7 +1,6 @@
 import inquirer from "inquirer";
 import { chessStateMachine, STATE_MACHINES } from "./stackr/machine";
 import { mru } from "./stackr/mru";
-import { moveSchema } from "./stackr/schemas.ts";
 import { prettyTurnName, signByOperator, sleep } from "./utils";
 
 /**
@@ -53,13 +52,15 @@ export const play = async () => {
     const inputs = {
       move,
     };
-
-    const { msgSender, signature } = await signByOperator(moveSchema, inputs);
-
-    await mru.submitAction(
-      "move", // transition function name
-      moveSchema.actionFrom({ inputs, msgSender, signature })
-    );
+    const domain = mru.config.domain;
+    const types = mru.getStfSchemaMap()["move"];
+    const { msgSender, signature } = await signByOperator(domain, types, inputs);
+    await mru.submitAction({
+      name: "move",
+      signature,
+      inputs,
+      msgSender,
+    });
 
     await sleep(500);
   }
