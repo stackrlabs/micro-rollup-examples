@@ -1,5 +1,5 @@
 import { StateMachine } from "@stackr/sdk/machine";
-import { describe, expect, it } from "bun:test";
+import { expect } from "chai";
 import { Wallet, ZeroHash, verifyTypedData } from "ethers";
 
 import genesisState from "../genesis-state.json";
@@ -47,11 +47,11 @@ describe("Token Machine Behaviours", () => {
   const charlieWallet = new Wallet(CHARLIE_ADDRESS);
 
   it("should have the correct id", () => {
-    expect(machine.id).toStrictEqual(STATE_MACHINES.ERC20);
+    expect(machine.id).to.equal(STATE_MACHINES.ERC20);
   });
 
   it("should have correct root as per initial state", () => {
-    expect(machine.stateRootHash).toStrictEqual(ZeroHash);
+    expect(machine.stateRootHash).to.equal(ZeroHash);
   });
 
   it("should be able to create new account", async () => {
@@ -76,12 +76,12 @@ describe("Token Machine Behaviours", () => {
 
     const leaves = machine.state;
 
-    expect(leaves.length).toStrictEqual(1);
+    expect(leaves.length).to.equal(1);
 
     const { address, balance, allowances } = leaves[0];
-    expect(address).toStrictEqual(msgSender);
-    expect(balance).toStrictEqual(0);
-    expect(allowances).toStrictEqual([]);
+    expect(address).to.equal(msgSender);
+    expect(balance).to.equal(0);
+    expect(allowances).to.deep.equal([]);
   });
 
   it("should be able to mint tokens", async () => {
@@ -110,12 +110,12 @@ describe("Token Machine Behaviours", () => {
     });
 
     const accounts = machine.state;
-    expect(accounts.length).toStrictEqual(1);
+    expect(accounts.length).to.equal(1);
 
     const { address, balance, allowances } = accounts[0];
-    expect(address).toStrictEqual(msgSender);
-    expect(balance).toStrictEqual(AMOUNT_TO_MINT);
-    expect(allowances).toStrictEqual([]);
+    expect(address).to.equal(msgSender);
+    expect(balance).to.equal(AMOUNT_TO_MINT);
+    expect(allowances).to.deep.equal([]);
   });
 
   it("should be allow burning own token", async () => {
@@ -160,12 +160,12 @@ describe("Token Machine Behaviours", () => {
     });
 
     const accounts = machine.state;
-    expect(accounts.length).toStrictEqual(1);
+    expect(accounts.length).to.equal(1);
 
     const { address, balance, allowances } = accounts[0];
-    expect(address).toStrictEqual(msgSender);
-    expect(balance).toStrictEqual(bobBalance - AMOUNT_TO_BURN);
-    expect(allowances).toStrictEqual([]);
+    expect(address).to.equal(msgSender);
+    expect(balance).to.equal(bobBalance - AMOUNT_TO_BURN);
+    expect(allowances).to.deep.equal([]);
   });
 
   it("should not allow burning someone else's tokens", async () => {
@@ -196,10 +196,10 @@ describe("Token Machine Behaviours", () => {
         signature,
         block,
       });
-    }).toThrowError("Unauthorized");
+    }).to.throw("Unauthorized");
 
     const finalStateRoot = machine.stateRootHash;
-    expect(initialStateRoot).toStrictEqual(finalStateRoot);
+    expect(initialStateRoot).to.equal(finalStateRoot);
   });
 
   it("should be able to create another account", async () => {
@@ -224,7 +224,7 @@ describe("Token Machine Behaviours", () => {
 
     const leaves = machine.state;
 
-    expect(leaves.length).toStrictEqual(2);
+    expect(leaves.length).to.equal(2);
 
     const aliceAccount = leaves.find(
       (account) => account.address === aliceWallet.address
@@ -234,9 +234,9 @@ describe("Token Machine Behaviours", () => {
     }
 
     const { address, balance, allowances } = aliceAccount;
-    expect(address).toStrictEqual(msgSender);
-    expect(balance).toStrictEqual(0);
-    expect(allowances).toStrictEqual([]);
+    expect(address).to.equal(msgSender);
+    expect(balance).to.equal(0);
+    expect(allowances).to.deep.equal([]);
   });
 
   it("should be able to transfer tokens, if sufficient balance", async () => {
@@ -267,7 +267,7 @@ describe("Token Machine Behaviours", () => {
     });
 
     const accounts = machine.state;
-    expect(accounts.length).toStrictEqual(2);
+    expect(accounts.length).to.equal(2);
 
     const aliceAccount = accounts.find(
       (account) => account.address === aliceWallet.address
@@ -285,11 +285,11 @@ describe("Token Machine Behaviours", () => {
       throw new Error("Account not found");
     }
 
-    expect(aliceAccount.balance).toStrictEqual(
+    expect(aliceAccount.balance).to.equal(
       initialBalances[aliceWallet.address] + AMOUNT_TO_TRANSFER
     );
 
-    expect(bobAccount.balance).toStrictEqual(
+    expect(bobAccount.balance).to.equal(
       initialBalances[msgSender] - AMOUNT_TO_TRANSFER
     );
   });
@@ -323,10 +323,10 @@ describe("Token Machine Behaviours", () => {
         signature,
         block,
       });
-    }).toThrowError("Account does not exist");
+    }).to.throw("Account does not exist");
 
     const finalStateRoot = machine.stateRootHash;
-    expect(initialStateRoot).toStrictEqual(finalStateRoot);
+    expect(initialStateRoot).to.equal(finalStateRoot);
   });
 
   it("should not allow token transfer if insufficient balance", async () => {
@@ -358,10 +358,10 @@ describe("Token Machine Behaviours", () => {
         signature,
         block,
       });
-    }).toThrowError("Insufficient funds");
+    }).to.throw("Insufficient funds");
 
     const finalStateRoot = machine.stateRootHash;
-    expect(initialStateRoot).toStrictEqual(finalStateRoot);
+    expect(initialStateRoot).to.equal(finalStateRoot);
   });
 
   it("should not allow action with invalid nonce", async () => {
@@ -390,9 +390,9 @@ describe("Token Machine Behaviours", () => {
         signature,
         block,
       });
-    }).toThrowError("Invalid nonce");
+    }).to.throw("Invalid nonce");
 
     const finalStateRoot = machine.stateRootHash;
-    expect(initialStateRoot).toStrictEqual(finalStateRoot);
+    expect(initialStateRoot).to.equal(finalStateRoot);
   });
 });
