@@ -49,14 +49,15 @@ export const play = async () => {
       },
     ]);
 
+    const name = "move";
     const inputs = {
       move,
     };
     const domain = mru.config.domain;
-    const types = mru.getStfSchemaMap()["move"];
-    const { msgSender, signature } = await signByOperator(domain, types, inputs);
+    const types = mru.getStfSchemaMap()[name];
+    const { msgSender, signature } = await signByOperator(domain, types, { name, inputs });
     await mru.submitAction({
-      name: "move",
+      name,
       signature,
       inputs,
       msgSender,

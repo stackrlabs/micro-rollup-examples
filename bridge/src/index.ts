@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { AbiCoder, formatEther, Wallet } from "ethers";
 
 import { mru } from "./stackr/mru.ts";
-import { signMessage } from "./utils.ts";
 
 dotenv.config();
 
@@ -23,11 +22,12 @@ async function main() {
           amount: Number(formatEther(amount)),
         };
 
+        const name = "mintToken";
         const domain = mru.config.domain;
-        const types = mru.getStfSchemaMap()["mintToken"];
-        const signature = await signMessage(operator, domain, types, inputs);
+        const types = mru.getStfSchemaMap()[name];
+        const signature = await operator.signTypedData(domain, types, { name, inputs });
         const actionParams: ActionParams = {
-          name: "mintToken",
+          name,
           inputs,
           signature,
           msgSender: operator.address,

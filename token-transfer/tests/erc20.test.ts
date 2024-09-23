@@ -55,15 +55,16 @@ describe("ERC20 MRU", async () => {
   describe("Create and Mint", async () => {
     it("should create an account", async () => {
       const msgSender = bobWallet.address;
+      const name = "create";
       const inputs = {
         address: msgSender,
       };
 
       const domain = mru.config.domain;
-      const types = mru.getStfSchemaMap()["create"];
-      const signature = await bobWallet.signTypedData(domain, types, inputs);
+      const types = mru.getStfSchemaMap()[name];
+      const signature = await bobWallet.signTypedData(domain, types, { name, inputs });
       const actionParams = {
-        name: "create",
+        name,
         signature,
         inputs,
         msgSender,
@@ -71,7 +72,6 @@ describe("ERC20 MRU", async () => {
       const ack = await mru.submitAction(actionParams);
 
       expect(ack.actionHash).toStrictEqual(new Action(actionParams).hash);
-
 
       await sleep(100);
 
@@ -90,6 +90,7 @@ describe("ERC20 MRU", async () => {
     it("should mint tokens", async () => {
       const msgSender = bobWallet.address;
       const MINT_AMOUNT = 1000;
+      const name = "mint";
       const inputs = {
         to: msgSender,
         from: msgSender,
@@ -98,10 +99,10 @@ describe("ERC20 MRU", async () => {
       };
 
       const domain = mru.config.domain;
-      const types = mru.getStfSchemaMap()["mint"];
-      const signature = await bobWallet.signTypedData(domain, types, inputs);
+      const types = mru.getStfSchemaMap()[name];
+      const signature = await bobWallet.signTypedData(domain, types, { name, inputs });
       const actionParams = {
-        name: "mint",
+        name,
         signature,
         inputs,
         msgSender,
@@ -109,8 +110,6 @@ describe("ERC20 MRU", async () => {
       const ack = await mru.submitAction(actionParams);
 
       expect(ack.actionHash).toStrictEqual(new Action(actionParams).hash);
-
-      expect(action.hash).toStrictEqual(ack.actionHash);
 
       await sleep(100);
 

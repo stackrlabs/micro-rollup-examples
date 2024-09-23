@@ -12,11 +12,12 @@ const main = async () => {
   // Create a random wallet
   const wallet = Wallet.createRandom();
 
+  const name = "increment";
   const domain = mru.config.domain;
-  const types = mru.getStfSchemaMap()["increment"];
-  const signature = await signMessage(wallet, domain, types, inputs);
+  const types = mru.getStfSchemaMap()[name];
+  const signature = await signMessage(wallet, domain, types, { name, inputs });
   const incrementActionParams = {
-    name: "increment",
+    name,
     inputs,
     signature,
     msgSender: wallet.address,

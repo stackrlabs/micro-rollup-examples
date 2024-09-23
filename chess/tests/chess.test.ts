@@ -47,17 +47,18 @@ describe("Chess MRU", async () => {
       const moves = chessMachine.wrappedState.moves();
       const move = moves[0];
 
+      const name = "move";
       const inputs = {
         move,
       };
-
+      
       const { msgSender, signature } = await signByOperator(
         mru.config.domain,
-        mru.getStfSchemaMap()["move"],
-        inputs
+        mru.getStfSchemaMap()[name],
+        { name, inputs }
       );
       await mru.submitAction({
-        name: "move",
+        name,
         signature,
         inputs,
         msgSender,

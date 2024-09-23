@@ -18,7 +18,7 @@ const sleep = (ms: number) => {
 const signByOperator = async (
   domain: Domain,
   types: EIP712Types,
-  payload: AllowedInputTypes
+  payload: { name: string, inputs: AllowedInputTypes }
 ) => {
   const { operator } = stackrConfig;
   const wallet = new Wallet(operator.accounts[0].privateKey);

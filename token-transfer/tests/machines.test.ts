@@ -56,18 +56,19 @@ describe("Token Machine Behaviours", () => {
 
   it("should be able to create new account", async () => {
     const msgSender = bobWallet.address;
-    const payload = {
+    const name = "create";
+    const inputs = {
       address: msgSender,
     };
     const signature = await bobWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["create"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs }
     );
 
     machine.reduce({
-      name: "create",
-      payload,
+      name,
+      payload: inputs,
       msgSender,
       signature,
       block,
@@ -86,7 +87,8 @@ describe("Token Machine Behaviours", () => {
   it("should be able to mint tokens", async () => {
     const AMOUNT_TO_MINT = 42;
     const msgSender = bobWallet.address;
-    const payload = {
+    const name = "mint";
+    const inputs = {
       to: msgSender,
       from: msgSender,
       amount: AMOUNT_TO_MINT,
@@ -94,13 +96,13 @@ describe("Token Machine Behaviours", () => {
     };
     const signature = await bobWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["mint"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs }
     );
 
     machine.reduce({
-      name: "mint",
-      payload,
+      name,
+      payload: inputs,
       msgSender,
       signature,
       block,
@@ -127,8 +129,8 @@ describe("Token Machine Behaviours", () => {
 
     const AMOUNT_TO_BURN = 20;
     const msgSender = bobWallet.address;
-
-    const payload = {
+    const name = "burn";
+    const inputs = {
       to: msgSender,
       from: msgSender,
       amount: AMOUNT_TO_BURN,
@@ -137,20 +139,20 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["burn"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs },
     );
 
     const signer = verifyTypedData(
       domain,
-      machine.stfToSchemaMap["burn"],
-      payload,
+      machine.stfToSchemaMap[name],
+      { name, inputs },
       signature
     );
 
     machine.reduce({
-      name: "burn",
-      payload,
+      name,
+      payload: inputs,
       msgSender: signer,
       signature,
       block,
@@ -172,7 +174,8 @@ describe("Token Machine Behaviours", () => {
     const msgSender = aliceWallet.address;
     const targetAccount = bobWallet.address;
 
-    const payload = {
+    const name = "burn";
+    const inputs = {
       to: targetAccount,
       from: targetAccount,
       amount: AMOUNT_TO_BURN,
@@ -181,14 +184,14 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await aliceWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["burn"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs }
     );
 
     expect(() => {
       machine.reduce({
-        name: "burn",
-        payload,
+        name,
+        payload: inputs,
         msgSender,
         signature,
         block,
@@ -201,19 +204,20 @@ describe("Token Machine Behaviours", () => {
 
   it("should be able to create another account", async () => {
     const msgSender = aliceWallet.address;
-    const payload = {
+    const name = "create"
+    const inputs = {
       address: msgSender,
     };
 
     const signature = await aliceWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["create"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs }
     );
 
     machine.reduce({
-      name: "create",
-      payload,
+      name,
+      payload: inputs,
       msgSender,
       signature,
       block,
@@ -242,7 +246,8 @@ describe("Token Machine Behaviours", () => {
 
     const AMOUNT_TO_TRANSFER = Math.floor(initialBalances[msgSender] / 2);
 
-    const payload = {
+    const name = "transfer";
+    const inputs = {
       to: aliceWallet.address,
       from: msgSender,
       amount: AMOUNT_TO_TRANSFER,
@@ -251,13 +256,13 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["transfer"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs }
     );
 
     machine.reduce({
-      name: "transfer",
-      payload,
+      name,
+      payload: inputs,
       msgSender,
       signature,
       block,
@@ -299,7 +304,8 @@ describe("Token Machine Behaviours", () => {
 
     const AMOUNT_TO_TRANSFER = Math.floor(initialBalances[msgSender] / 2);
 
-    const payload = {
+    const name = "transfer";
+    const inputs = {
       to: charlieWallet.address,
       from: msgSender,
       amount: AMOUNT_TO_TRANSFER,
@@ -308,14 +314,14 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["transfer"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs }
     );
 
     expect(() => {
       machine.reduce({
-        name: "transfer",
-        payload,
+        name,
+        payload: inputs,
         msgSender,
         signature,
         block,
@@ -334,7 +340,8 @@ describe("Token Machine Behaviours", () => {
 
     const AMOUNT_TO_TRANSFER = Math.floor(initialBalances[msgSender] * 2);
 
-    const payload = {
+    const name = "transfer";
+    const inputs = {
       to: aliceWallet.address,
       from: msgSender,
       amount: AMOUNT_TO_TRANSFER,
@@ -343,14 +350,14 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["transfer"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs }
     );
 
     expect(() => {
       machine.reduce({
-        name: "transfer",
-        payload,
+        name,
+        payload: inputs,
         msgSender,
         signature,
         block,
@@ -366,7 +373,8 @@ describe("Token Machine Behaviours", () => {
     const msgSender = bobWallet.address;
     const initialStateRoot = machine.stateRootHash;
 
-    const payload = {
+    const name = "mint";
+    const inputs = {
       to: msgSender,
       from: msgSender,
       amount: AMOUNT_TO_MINT,
@@ -375,14 +383,14 @@ describe("Token Machine Behaviours", () => {
 
     const signature = await bobWallet.signTypedData(
       domain,
-      machine.stfToSchemaMap["mint"],
-      payload
+      machine.stfToSchemaMap[name],
+      { name, inputs }
     );
 
     expect(() => {
       machine.reduce({
-        name: "mint",
-        payload,
+        name,
+        payload: inputs,
         msgSender,
         signature,
         block,

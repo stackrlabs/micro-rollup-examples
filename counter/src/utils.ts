@@ -6,7 +6,7 @@ export const signMessage = async (
   wallet: HDNodeWallet,
   domain: Domain,
   types: EIP712Types,
-  payload: AllowedInputTypes
+  payload: { name: string, inputs: AllowedInputTypes }
 ) => {
   const signature = await wallet.signTypedData(domain, types, payload);
   return signature;

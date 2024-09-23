@@ -1,4 +1,4 @@
-import { STF, SolidityType, Transitions } from "@stackr/sdk/machine";
+import { SolidityType, Transitions } from "@stackr/sdk/machine";
 
 import { ERC20, BetterMerkleTree as StateWrapper } from "./state";
 
@@ -21,7 +21,7 @@ const createAccountSchema = {
 } as const;
 
 // --------- State Transition Handlers ---------
-const create: STF<ERC20, typeof createAccountSchema> = {
+const create = ERC20.STF({
   schema: createAccountSchema,
   handler: ({ inputs, state }) => {
     const { address } = inputs;
@@ -36,9 +36,9 @@ const create: STF<ERC20, typeof createAccountSchema> = {
     });
     return state;
   },
-};
+});
 
-const mint: STF<ERC20, typeof baseSchema> = {
+const mint = ERC20.STF({
   schema: baseSchema,
   handler: ({ inputs, state }) => {
     const { to, amount, nonce } = inputs;
@@ -53,9 +53,9 @@ const mint: STF<ERC20, typeof baseSchema> = {
     state.leaves[index].balance += amount;
     return state;
   },
-};
+});
 
-const burn: STF<ERC20, typeof baseSchema> = {
+const burn = ERC20.STF({
   schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { from, amount, nonce } = inputs;
@@ -74,9 +74,9 @@ const burn: STF<ERC20, typeof baseSchema> = {
     state.leaves[index].balance -= amount;
     return state;
   },
-};
+});
 
-const transfer: STF<ERC20, typeof baseSchema> = {
+const transfer = ERC20.STF({
   schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { to, from, amount, nonce } = inputs;
@@ -109,9 +109,9 @@ const transfer: STF<ERC20, typeof baseSchema> = {
     state.leaves[toIndex].balance += amount;
     return state;
   },
-};
+});
 
-const approve: STF<ERC20, typeof baseSchema> = {
+const approve = ERC20.STF({
   schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { from, to, amount, nonce } = inputs;
@@ -128,9 +128,9 @@ const approve: STF<ERC20, typeof baseSchema> = {
     state.leaves[index].allowances.push({ address: to, amount });
     return state;
   },
-};
+});
 
-const transferFrom: STF<ERC20, typeof baseSchema> = {
+const transferFrom = ERC20.STF({
   schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { to, from, amount, nonce } = inputs;
@@ -168,7 +168,7 @@ const transferFrom: STF<ERC20, typeof baseSchema> = {
     );
     return state;
   },
-};
+});
 
 export const transitions: Transitions<ERC20> = {
   create,
