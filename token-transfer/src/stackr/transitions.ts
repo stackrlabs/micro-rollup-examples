@@ -1,4 +1,5 @@
-import { Transitions, STF } from "@stackr/sdk/machine";
+import { SolidityType, Transitions } from "@stackr/sdk/machine";
+
 import { ERC20, BetterMerkleTree as StateWrapper } from "./state";
 
 // --------- Utilities ---------
@@ -6,19 +7,20 @@ const findIndexOfAccount = (state: StateWrapper, address: string) => {
   return state.leaves.findIndex((leaf) => leaf.address === address);
 };
 
-type CreateInput = {
-  address: string;
-};
+// --------- Input Schemas ---------
 
-type BaseActionInput = {
-  from: string;
-  to: string;
-  amount: number;
-  nonce: number;
-};
+const baseSchema = {
+  to: SolidityType.ADDRESS,
+  from: SolidityType.ADDRESS,
+  amount: SolidityType.UINT,
+  nonce: SolidityType.UINT,
+} as const; // NOTE: it is important to use `as const` to make sure the schema is not widened to a general object
 
 // --------- State Transition Handlers ---------
-const create: STF<ERC20, CreateInput> = {
+const create = ERC20.STF({
+  schema: {
+    address: SolidityType.ADDRESS,
+  },
   handler: ({ inputs, state }) => {
     const { address } = inputs;
     if (state.leaves.find((leaf) => leaf.address === address)) {
@@ -32,9 +34,10 @@ const create: STF<ERC20, CreateInput> = {
     });
     return state;
   },
-};
+});
 
-const mint: STF<ERC20, BaseActionInput> = {
+const mint = ERC20.STF({
+  schema: baseSchema,
   handler: ({ inputs, state }) => {
     const { to, amount, nonce } = inputs;
 
@@ -48,9 +51,10 @@ const mint: STF<ERC20, BaseActionInput> = {
     state.leaves[index].balance += amount;
     return state;
   },
-};
+});
 
-const burn: STF<ERC20, BaseActionInput> = {
+const burn = ERC20.STF({
+  schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { from, amount, nonce } = inputs;
 
@@ -68,9 +72,10 @@ const burn: STF<ERC20, BaseActionInput> = {
     state.leaves[index].balance -= amount;
     return state;
   },
-};
+});
 
-const transfer: STF<ERC20, BaseActionInput> = {
+const transfer = ERC20.STF({
+  schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { to, from, amount, nonce } = inputs;
 
@@ -102,9 +107,10 @@ const transfer: STF<ERC20, BaseActionInput> = {
     state.leaves[toIndex].balance += amount;
     return state;
   },
-};
+});
 
-const approve: STF<ERC20, BaseActionInput> = {
+const approve = ERC20.STF({
+  schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { from, to, amount, nonce } = inputs;
 
@@ -120,9 +126,10 @@ const approve: STF<ERC20, BaseActionInput> = {
     state.leaves[index].allowances.push({ address: to, amount });
     return state;
   },
-};
+});
 
-const transferFrom: STF<ERC20, BaseActionInput> = {
+const transferFrom = ERC20.STF({
+  schema: baseSchema,
   handler: ({ inputs, state, msgSender }) => {
     const { to, from, amount, nonce } = inputs;
 
@@ -159,7 +166,7 @@ const transferFrom: STF<ERC20, BaseActionInput> = {
     );
     return state;
   },
-};
+});
 
 export const transitions: Transitions<ERC20> = {
   create,

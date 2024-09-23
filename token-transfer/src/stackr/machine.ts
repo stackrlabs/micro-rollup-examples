@@ -1,7 +1,8 @@
 import { StateMachine } from "@stackr/sdk/machine";
+
 import genesisState from "../../genesis-state.json";
-import { transitions } from "./transitions";
 import { ERC20 } from "./state";
+import { transitions } from "./transitions";
 
 const STATE_MACHINES = {
   ERC20: "erc-20",
@@ -14,4 +15,5 @@ const erc20StateMachine = new StateMachine({
   on: transitions,
 });
 
-export { STATE_MACHINES, erc20StateMachine };
+export { erc20StateMachine, STATE_MACHINES };
+

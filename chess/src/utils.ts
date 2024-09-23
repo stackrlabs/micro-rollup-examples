@@ -1,7 +1,8 @@
-import { ActionSchema } from "@stackr/sdk";
+import { Domain } from "@stackr/sdk";
+import { AllowedInputTypes, EIP712Types } from "@stackr/sdk/machine";
 import { Wallet } from "ethers";
-import { stackrConfig } from "../stackr.config";
 
+import { stackrConfig } from "../stackr.config";
 
 const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -14,14 +15,14 @@ const sleep = (ms: number) => {
  * @returns The signature and the message sender
  */
 
-const signByOperator = async (schema: ActionSchema, payload: any) => {
+const signByOperator = async (
+  domain: Domain,
+  types: EIP712Types,
+  payload: { name: string, inputs: AllowedInputTypes }
+) => {
   const { operator } = stackrConfig;
   const wallet = new Wallet(operator.accounts[0].privateKey);
-  const signature = await wallet.signTypedData(
-    schema.domain,
-    schema.EIP712TypedData.types,
-    payload
-  );
+  const signature = await wallet.signTypedData(domain, types, payload);
   return { msgSender: wallet.address, signature };
 };
 
@@ -30,4 +31,3 @@ const prettyTurnName = (turn: string) => {
 };
 
 export { prettyTurnName, signByOperator, sleep };
-
