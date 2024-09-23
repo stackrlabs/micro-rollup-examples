@@ -1,15 +1,10 @@
-import {
-  ConfirmationEvents,
-  MicroRollup,
-  MicroRollupResponse,
-} from "@stackr/sdk";
+import { MicroRollup, MicroRollupResponse } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { Chess } from "chess.js";
 
 import genesisState from "../genesis-state.json";
 import { chessStateMachine } from "../src/stackr/machine.ts";
-import { moveSchema } from "../src/stackr/schemas.ts";
 import { ChessState } from "../src/stackr/state.ts";
 import { transitions } from "../src/stackr/transitions.ts";
 import { signByOperator, sleep } from "../src/utils.ts";
@@ -35,7 +30,6 @@ describe("Chess MRU", async () => {
         },
         logLevel: "error",
       },
-      actionSchemas: [moveSchema],
       stateMachines: [machine],
     });
 
@@ -53,31 +47,24 @@ describe("Chess MRU", async () => {
       const moves = chessMachine.wrappedState.moves();
       const move = moves[0];
 
+      const name = "move";
       const inputs = {
         move,
       };
-
-      const waitForEvent = (eventName: any) => {
-        return new Promise((resolve) => {
-          mru.events.subscribe(eventName, (event) => {
-            console.log(event);
-            resolve(event);
-          });
-        });
-      };
-
-      const signInfo = await signByOperator(moveSchema, inputs);
-
-      const ack = await mru.submitAction(
-        "move",
-        moveSchema.actionFrom({
-          inputs,
-          ...signInfo,
-        })
+      
+      const { msgSender, signature } = await signByOperator(
+        mru.config.domain,
+        mru.getStfSchemaMap()[name],
+        { name, inputs }
       );
+      await mru.submitAction({
+        name,
+        signature,
+        inputs,
+        msgSender,
+      });
 
-      await waitForEvent(ConfirmationEvents.C1);
-      await sleep(1000);
+      await sleep(100);
 
       const replicaBoard = new Chess();
       replicaBoard.move(move);
