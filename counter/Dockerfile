@@ -1,6 +1,9 @@
-FROM node:20-alpine
+FROM node:lts-bookworm-slim
 
 RUN npm install -g npm@latest
+
+# Install bun globally
+RUN npm install -g bun
 
 WORKDIR /app
 
@@ -9,8 +12,7 @@ COPY package.json package.json
 COPY tsconfig.json tsconfig.json
 
 # Copy Stackr files
-# if you have a deployment.json file, copy it here
-COPY deployment.json* ./
+COPY deployment.json deployment.json
 COPY genesis-state.json genesis-state.json
 COPY stackr.config.ts stackr.config.ts
 
