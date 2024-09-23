@@ -71,10 +71,7 @@ describe("ERC20 MRU", async () => {
       };
       const ack = await mru.submitAction(actionParams);
 
-      const action = schema.actionFrom({ msgSender, signature, inputs });
-      const ack = await mru.submitAction(actionName, action);
-
-      expect(action.hash).toStrictEqual(ack.actionHash);
+      expect(ack.actionHash).toStrictEqual(new Action(actionParams).hash)
 
       await sleep(100);
 
@@ -112,10 +109,7 @@ describe("ERC20 MRU", async () => {
       };
       const ack = await mru.submitAction(actionParams);
 
-      const action = schema.actionFrom({ msgSender, signature, inputs });
-      const ack = await mru.submitAction(actionName, action);
-
-      expect(action.hash).toStrictEqual(ack.actionHash);
+      expect(ack.actionHash).toStrictEqual(new Action(actionParams).hash)
 
       await sleep(100);
 

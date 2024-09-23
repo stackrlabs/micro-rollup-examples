@@ -16,13 +16,11 @@ const baseSchema = {
   nonce: SolidityType.UINT,
 } as const;
 
-const createAccountSchema = {
-  address: SolidityType.ADDRESS,
-} as const;
-
 // --------- State Transition Handlers ---------
 const create = ERC20.STF({
-  schema: createAccountSchema,
+  schema: {
+    address: SolidityType.ADDRESS,
+  },
   handler: ({ inputs, state }) => {
     const { address } = inputs;
     if (state.leaves.find((leaf) => leaf.address === address)) {
