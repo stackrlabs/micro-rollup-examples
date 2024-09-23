@@ -14,7 +14,7 @@ const baseSchema = {
   from: SolidityType.ADDRESS,
   amount: SolidityType.UINT,
   nonce: SolidityType.UINT,
-} as const;
+} as const; // NOTE: it is important to use `as const` to make sure the schema is not widened to a general object
 
 // --------- State Transition Handlers ---------
 const create = ERC20.STF({
