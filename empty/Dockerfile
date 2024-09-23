@@ -1,6 +1,4 @@
-FROM node:20-alpine
-
-RUN npm install -g npm@latest
+FROM oven/bun:slim
 
 WORKDIR /app
 
@@ -18,7 +16,7 @@ COPY stackr.config.ts stackr.config.ts
 COPY src src
 
 # Install dependencies
-RUN npm install
+RUN bun install
 
 # Command to run the application
-CMD ["npm", "start"]
+CMD ["bun", "start"]

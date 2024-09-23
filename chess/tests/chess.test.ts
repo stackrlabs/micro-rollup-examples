@@ -1,6 +1,6 @@
 import { MicroRollup, MicroRollupResponse } from "@stackr/sdk";
 import { StateMachine } from "@stackr/sdk/machine";
-import { expect } from "chai";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { Chess } from "chess.js";
 
 import genesisState from "../genesis-state.json";
@@ -69,11 +69,11 @@ describe("Chess MRU", async () => {
       const replicaBoard = new Chess();
       replicaBoard.move(move);
 
-      expect(chessMachine.wrappedState.turn()).to.equal(
+      expect(chessMachine.wrappedState.turn()).toStrictEqual(
         replicaBoard.turn()
       );
 
-      expect(chessMachine.state).to.equal(replicaBoard.fen());
+      expect(chessMachine.state).toStrictEqual(replicaBoard.fen());
     });
   });
 
