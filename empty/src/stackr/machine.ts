@@ -1,3 +1,4 @@
+// Docs: https://docs.stf.xyz/build/framework/state-machine/introduction
 import { StateMachine } from "@stackr/sdk/machine";
 import genesisState from "../../genesis-state.json";
 
